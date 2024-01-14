@@ -7,6 +7,9 @@ from app import count_faces, classify_gesture, hands, mp_drawing, mp_hands, capt
 class VideoCaptureApp:
     def __init__(self, window, window_title, video_source=0):
 
+        self.border_image = None
+
+        self.snapshot_taken = False 
         self.countdown_active = False
         self.last_valid_time = datetime.datetime.now()
 
@@ -15,12 +18,12 @@ class VideoCaptureApp:
         
         self.video_source = video_source
         self.vid = cv2.VideoCapture(self.video_source)
+
+        video_frame_width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+        video_frame_height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
         
-        self.canvas = tk.Canvas(window, width=self.vid.get(cv2.CAP_PROP_FRAME_WIDTH), height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.canvas.pack()
-        
-        self.btn_start = tk.Button(window, text="Start", width=10, command=self.start_capture)
-        self.btn_start.pack(padx=10, pady=5)
+        self.video_canvas = tk.Canvas(window, width=video_frame_width, height=video_frame_height)
+        self.video_canvas.pack()
         
         self.btn_stop = tk.Button(window, text="Stop", width=10, command=self.stop_capture)
         self.btn_stop.pack(padx=10, pady=5)
