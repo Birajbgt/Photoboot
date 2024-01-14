@@ -31,67 +31,7 @@ class VideoCaptureApp:
         self.update()
         self.window.mainloop()
 
-    def process_frame(self, frame):
-        # Resize frame for further processing
-        width = int(frame.shape[1] * 0.5)
-        height = int(frame.shape[0] * 0.5)
-        resized_image = cv2.resize(frame, (width, height))
-        image_rgb = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
-
-        # Face detection
-        num_faces = count_faces(resized_image)
-        print(f"Number of faces: {num_faces}")  # Continuously print the number of faces
-        resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
-
-        # Hand gesture recognition
-        hand_results = hands.process(image_rgb)
-        valid_gestures = 0
-        current_gestures = []  # List to keep track of current hand gestures
-        
-        if hand_results.multi_hand_landmarks:
-            for hand_landmarks in hand_results.multi_hand_landmarks:
-                gesture = classify_gesture(hand_landmarks.landmark)
-                current_gestures.append(gesture)
-                if gesture in ['Thumbs Up', 'Peace']:
-                    valid_gestures += 1
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-        
-        # Check for valid shot and start countdown
-        print(current_gestures)
-
-        # Set window to fullscreen again after selection
-        self.window.attributes("-fullscreen", True)
-
-        if not self.countdown_active and valid_gestures >= num_faces and num_faces > 0:
-            self.last_valid_time = datetime.datetime.now()
-            self.countdown_active = True
-            # Close the window when 'q' is pressed
-        
-
-        key = cv2.waitKey(1)
-        if key != -1 and key != ord('q'):  # Any key is pressed, other than 'q'
-            self.countdown_active = True
-            self.last_valid_time = datetime.datetime.now()
-        if self.countdown_active:
-            elapsed = (datetime.datetime.now() - self.last_valid_time).total_seconds()
-            
-            if elapsed < 3:
-                # Display countdown on the screen
-                text_to_display = str(3 - int(elapsed))
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                font_scale = 2.5
-                font_thickness = 3
-                text_size, _ = cv2.getTextSize(text_to_display, font, font_scale, font_thickness)
-                text_x = (frame.shape[1] - text_size[0]) // 2
-                text_y = (frame.shape[0] + text_size[1]) // 2
-                cv2.putText(frame, text_to_display, (text_x, text_y), font, font_scale, (0, 255, 0), font_thickness, cv2.LINE_AA)
-            else:
-                # Capture snapshot and reset countdown
-                timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-                capture_snapshot(frame, f'snapshot_{timestamp}.png')
-                print("Snapshot taken!")
-                self.countdown_active = False
-
+    
     def start_capture(self):
         self.vid = cv2.VideoCapture(self.video_source)
 
