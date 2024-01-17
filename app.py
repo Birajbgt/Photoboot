@@ -256,7 +256,11 @@ def count_faces(image):
             mp_drawing.draw_detection(image, detection)
         return len(results.detections)
     return 0
-
+def cv2_pil_to_cv2(pil_image):
+    # Convert a PIL Image into an OpenCV image (in memory)
+    open_cv_image = np.array(pil_image) 
+    open_cv_image = open_cv_image[:, :, ::-1].copy()  # Convert RGB to BGR
+    return open_cv_image
 last_valid_time = None
 countdown_active = False
 overlay = cv2.imread('lastframe1.png', -1)
