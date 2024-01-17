@@ -297,6 +297,14 @@ def capture_snapshot(image, filename):
     # Calculate text position for center alignment
     text_x = (image.shape[1] - text_size[0]) // 2
     text_y = image.shape[0] - 20  # Position from the bottom
+    def count_faces(image):
+    results = face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    # Draw face detections
+    if results.detections:
+        for detection in results.detections:
+            mp_drawing.draw_detection(image, detection)
+        return len(results.detections)
+    return 0
 
     # Draw the text
     cv2.putText(image, selected_quote, (text_x, text_y), font, font_scale, (0, 0, 0), font_thickness)
