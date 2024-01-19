@@ -19,7 +19,15 @@ overlay = cv2.resize(overlay, desired_size)
 overlay_alpha = cv2.resize(overlay_alpha, desired_size)
 background_alpha = cv2.resize(background_alpha, desired_size)
 
+ # Face detection
+    num_faces = count_faces(resized_image)
+    print(f"Number of faces: {num_faces}")  # Continuously print the number of faces
+    resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
 
+    # Hand gesture recognition
+    hand_results = hands.process(image_rgb)
+    valid_gestures = 0
+    current_gestures = []  # List to keep track of current hand gestures
 
 # Start video capture
 cap = cv2.VideoCapture(0)  # Use 0 for the default camera
@@ -105,9 +113,6 @@ while True:
             print("Snapshot taken!")
             # set_camera_resolution(cap, 640, 480)
             countdown_active = False
-
-             # Display the saved photo and QR code in separate sections
-            cv2.imshow('Graduation', np.hstack((frame, qr_code_image)))
 
     # Blend the overlay with the frame
     # bar_height = 50  # Adjust the height of the bar as needed

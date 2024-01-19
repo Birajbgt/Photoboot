@@ -16,22 +16,16 @@ from quotes import quotes
 def upload_image_and_generate_qr(cv2_image):
     # Convert the OpenCV image to bytes
     _, im_buf_arr = cv2.imencode('.jpg', cv2_image)
+    image_bytes = im_buf_arr.tobytes()
 
-    temp_file = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
-    temp_file.write(im_buf_arr)
-    temp_file.close()
-
-    # Upload the image file
-    with open(temp_file.name, 'rb') as file:
-        files = {'file': file}
-        response = requests.post('https://file.io', files=files)
+    # Upload the image
+    response = requests.post('https://file.io', files={'file': image_bytes})
     
     # Check for successful upload
     if response.status_code == 200 and response.json()['success']:
         # Get the URL of the uploaded image
         image_url = response.json()['link']
         print(f"Image is available at: {image_url}")
-
 
         # Generate QR Code for the URL
         qr = qrcode.QRCode(
@@ -51,8 +45,6 @@ def upload_image_and_generate_qr(cv2_image):
         return qr_open_cv_image
     else:
         raise Exception("Error uploading file")
-    
-    
 
 
 def cv2_pil_to_cv2(pil_image):
@@ -256,11 +248,7 @@ def count_faces(image):
             mp_drawing.draw_detection(image, detection)
         return len(results.detections)
     return 0
-def cv2_pil_to_cv2(pil_image):
-    # Convert a PIL Image into an OpenCV image (in memory)
-    open_cv_image = np.array(pil_image) 
-    open_cv_image = open_cv_image[:, :, ::-1].copy()  # Convert RGB to BGR
-    return open_cv_image
+
 last_valid_time = None
 countdown_active = False
 overlay = cv2.imread('lastframe1.png', -1)
@@ -297,14 +285,6 @@ def capture_snapshot(image, filename):
     # Calculate text position for center alignment
     text_x = (image.shape[1] - text_size[0]) // 2
     text_y = image.shape[0] - 20  # Position from the bottom
-    def count_faces(image):
-    results = face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    # Draw face detections
-    if results.detections:
-        for detection in results.detections:
-            mp_drawing.draw_detection(image, detection)
-        return len(results.detections)
-    return 0
 
     # Draw the text
     cv2.putText(image, selected_quote, (text_x, text_y), font, font_scale, (0, 0, 0), font_thickness)
