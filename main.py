@@ -19,7 +19,15 @@ overlay = cv2.resize(overlay, desired_size)
 overlay_alpha = cv2.resize(overlay_alpha, desired_size)
 background_alpha = cv2.resize(background_alpha, desired_size)
 
+ # Face detection
+    num_faces = count_faces(resized_image)
+    print(f"Number of faces: {num_faces}")  # Continuously print the number of faces
+    resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
 
+    # Hand gesture recognition
+    hand_results = hands.process(image_rgb)
+    valid_gestures = 0
+    current_gestures = []  # List to keep track of current hand gestures
 
 # Start video capture
 cap = cv2.VideoCapture(0)  # Use 0 for the default camera
